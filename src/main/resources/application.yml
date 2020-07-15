@@ -1,0 +1,13 @@
+server:
+  port: 9100
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/spring
+    username: spring
+    password: spring
+
+  flyway:    enabled: true
+    encoding: UTF-8
+    clean-on-validation-error: true
+

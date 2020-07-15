@@ -1,0 +1,76 @@
+plugins {
+	id 'org.springframework.boot' version '2.3.1.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id 'java'
+}
+
+group = 'jp.mirageworld.spring.fileupload'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+    mybatisGenerator {
+        extendsFrom runtimeOnly
+    }
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.flywaydb:flyway-core'
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.3'
+
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	runtimeOnly 'org.postgresql:postgresql'
+
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+	
+    mybatisGenerator 'org.mybatis.generator:mybatis-generator-core:1.3.5'
+    mybatisGenerator 'tk.mybatis:mapper:4.1.5'
+}
+
+test {
+	useJUnitPlatform()
+}
+
+
+task mybatisGenerator {
+    group  'mybatis'
+    doLast {
+        File xml = new File("$projectDir", 'mybatis-generator.xml')
+        File src = new File("$projectDir", 'src/main/java')
+        
+        ant.properties['targetProject'] = src.getAbsolutePath()
+        ant.properties['entity']='jp.mirageworld.spring.fileupload.entity';
+        ant.properties['mapper']='jp.mirageworld.spring.fileupload.mapper';
+        
+        ant.taskdef(
+            name: 'mbgenerator', 
+            classname: 'org.mybatis.generator.ant.GeneratorAntTask', 
+            classpath: configurations.mybatisGenerator.asPath
+        )
+        ant.mbgenerator(
+            overwrite: true, 
+            configfile: xml, 
+            verbose: true) {
+            propertyset {
+                propertyref(name: 'targetProject')        
+                propertyref(name: 'entity')        
+                propertyref(name: 'mapper')        
+            }
+        }        
+    }
+}
