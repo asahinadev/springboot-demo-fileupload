@@ -49,13 +49,8 @@ public class IndexController {
 	@ResponseBody
 	@GetMapping(path = "image/{id}", produces = MediaType.IMAGE_PNG_VALUE)
 	public byte[] file(@PathVariable("id") Integer id) {
-
 		FilesKey key = new FilesKey();
 		key.setId(id);
-
-		FilesExample example = new FilesExample();
-		example.or(example.createCriteria().andIdEqualTo(id));
-
-		return mapper.selectByExampleWithBLOBs(example).get(0).getFile();
+		return mapper.selectByPrimaryKey(key).getFile();
 	}
 }
